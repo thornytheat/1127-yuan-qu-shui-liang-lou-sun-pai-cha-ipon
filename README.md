@@ -18,12 +18,14 @@ docker compose up --build -d
 - 漏损筛查 `loss_screen`
 - 巡检配次 `field_rounds`
 - 水量追溯 `water_balance`
+- 夜班隔离指令 `night_orders`（按分区各一份，含截点闸口、定案与补证裁决）
 
 ## 查看运行结果
 
 - `GET /api/overview` 返回默认运行及其指纹。
 - `POST /api/scenario` 接收 `{"capacity": 3}`。入口接受 1–100 的整数，应用样例时使用该业务额度。
 - `GET /api/stages/water_balance` 查看该环节的独立证据，支持 `?capacity=3`。
+- `GET /api/night-orders` 按分区返回下一夜隔离指令、待补测支段与试验复核闸口，支持 `?capacity=3`。
 
 ```sh
 docker compose exec -T app python -m meterloss.delivery evaluate --capacity 3

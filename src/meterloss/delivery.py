@@ -83,6 +83,16 @@ def stage_evidence(module):
     return jsonify(run_id=result["run_id"], **result["stages"][positions[module]])
 
 
+@application.get("/api/night-orders")
+def night_orders():
+    raw_capacity = request.args.get("capacity")
+    try:
+        result = initial_snapshot() if raw_capacity is None else snapshot(parse_capacity(int(raw_capacity)))
+    except ValueError:
+        return jsonify(code="INVALID_SCENARIO", message="请输入 1 到 100 之间的整数"), 400
+    return jsonify(run_id=result["run_id"], **result["night_orders"])
+
+
 @application.errorhandler(RequestEntityTooLarge)
 def request_too_large(_error):
     return jsonify(code="REQUEST_TOO_LARGE", message="请求内容超出 8 KiB"), 413

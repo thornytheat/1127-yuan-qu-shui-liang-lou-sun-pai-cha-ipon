@@ -7,6 +7,7 @@ from .night_windows.calendar_replay import estimate_baseline,counter_pressure
 from .water_balance.district_mass import reconcile_districts
 from .water_balance.repair_effect import aggregate_repairs
 from .loss_screen.isolation_graph import localize
+from .night_orders.service import build_orders, stage_view
 from .field_rounds.emergency_replay import stress_assign
 from .meter_ingress.service import validate_readings,meter_evidence
 from .night_windows.service import build_baseline,summarize_rates
@@ -32,6 +33,7 @@ def run(capacity:int|None=None)->dict:
     district_balance=reconcile_districts(current,readings,rules["recheck"])
     branching=load("isolation_measurements.json")
     localization=localize(branching["pipes"],branching["trials"],rules["recheck"])
+    night_orders, trial_gates=build_orders(branching["pipes"],branching["trials"],rules,rules["recheck"])
     prior=estimate_baseline(baseline+tuple(item for item in excluded if not item.target),rules["policy"]["pressure_anchor"],4)
     prior_notes=counter_pressure(prior,rules["policy"]["pressure_anchor"])
     profiles=load("historical_meter_profiles.json")
@@ -65,6 +67,7 @@ def run(capacity:int|None=None)->dict:
         "columns":{"meter":"水表","sector":"分区","cluster":"用水簇","peak":"余流 L/min","score":"经验尾概率",
                    "nights":"连续夜","state":"漏损分级","crew":"巡检组","dispatch":"工单状态","detail":"追溯依据"},
         "rows":result,"series":graph,
+        "night_orders":stage_view(night_orders,trial_gates,rules["recheck"]),
         "stages":[{"title":"抄表校验","summary":f"取得 {len(spans)} 段可用脉冲，隔离 {len(issues)} 处异常",
                    "records":meter_evidence(spans,issues)},
                   {"title":"隔离夜窗","summary":f"有 {len(baseline)} 个历史基线，隔离 {len(excluded)} 条不可比夜窗",

@@ -50,3 +50,22 @@ def test_large_request_returns_structured_error():
     response = application.test_client().post("/api/scenario", json={"capacity": "X" * 9000})
     assert response.status_code == 413
     assert response.get_json()["code"] == "REQUEST_TOO_LARGE"
+
+
+def test_night_orders_endpoint_returns_one_order_per_zone():
+    client = application.test_client()
+    response = client.get("/api/night-orders")
+    assert response.status_code == 200
+    view = response.get_json()
+    assert len(view["run_id"]) == 12
+    sectors = {row["sector"] for row in view["records"]}
+    assert sectors == {"南立管", "窑炉间", "中水站"}
+    assert all(row["crew"] for row in view["records"])
+    late = [row for row in view["errors"] if row["status"] == "late"]
+    assert late and all(row["reason"] for row in late)
+    # 与同参数快照保持同一指纹和同一批指令。
+    scenario = client.post("/api/scenario", json={"capacity": 4}).get_json()
+    scoped = client.get("/api/night-orders?capacity=4").get_json()
+    assert scoped == {**scenario["night_orders"], "run_id": scenario["run_id"]}
+    bad = client.get("/api/night-orders?capacity=0")
+    assert bad.status_code == 400 and bad.get_json()["code"] == "INVALID_SCENARIO"

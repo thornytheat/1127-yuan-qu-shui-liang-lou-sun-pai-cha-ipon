@@ -12,6 +12,7 @@ AI/ML / 传统ML · 园区夜间水表异常聚类与巡检工单排序
 | M4 | 漏损筛查 | 压力修正与经验尾概率校准，按持续夜数、关阀余流及簇外距离分级 | `src/meterloss/loss_screen/scoring.py` `src/meterloss/loss_screen/contracts.py` `src/meterloss/loss_screen/service.py` | `tests/test_loss_screen.py` |
 | M5 | 巡检配次 | 显式优先队列和执勤区、听漏资质、阀门资质、步行和班内时间约束 | `src/meterloss/field_rounds/assignment.py` `src/meterloss/field_rounds/contracts.py` `src/meterloss/field_rounds/service.py` | `tests/test_field_rounds.py` |
 | M6 | 水量追溯 | 配次独立核验与工单回执对账，量化已确认损耗、召回和净节水量 | `src/meterloss/water_balance/audit.py` `src/meterloss/water_balance/contracts.py` `src/meterloss/water_balance/service.py` | `tests/test_water_balance.py` |
+| M7 | 夜班隔离指令 | 截点闸口过滤迟到失准与重跑，双支撑加 65% 份额定案，接近支段按期望后验熵裁决一次补证试验 | `src/meterloss/night_orders/planner.py` `src/meterloss/night_orders/contracts.py` `src/meterloss/night_orders/service.py` | `tests/test_night_orders.py` |
 
 ## 边界案例
 
@@ -27,3 +28,6 @@ AI/ML / 传统ML · 园区夜间水表异常聚类与巡检工单排序
 | TRAP-52 | 水表簇 id 任意编号 | 按标签直接比 | 组合矩阵全局最优一对一 | `src/meterloss/consumption_clusters/medoids.py` | `tests/test_consumption_clusters.py::test_assignment_after_permutation` |
 | TRAP-53 | 请求同时带大流量表 | 重新计算批次尺度 | 冻结 medoid 和统计量 | `src/meterloss/consumption_clusters/medoids.py` | `tests/test_consumption_clusters.py::test_immutable_inference_score` |
 | TRAP-54 | 抄表策略版本更新 | 沿用旧签发摘要 | 源版本加入签名 | `src/meterloss/water_balance/audit.py` | `tests/test_water_balance.py::test_upstream_changes_dispatch_stamp` |
+| TRAP-61 | 同阀点换名重跑 | 当作新试验增加派工 | 按分区阀点去重，重跑只登记不派工 | `src/meterloss/night_orders/planner.py` | `tests/test_night_orders.py::test_duplicate_rerun_creates_no_extra_dispatch` |
+| TRAP-62 | 迟到记录抢在截点后入账 | 翻转变更本班指令 | 截点闸口拒收，指令仅由采信试验决定 | `src/meterloss/night_orders/planner.py` | `tests/test_night_orders.py::test_late_and_unreviewed_and_duplicate_trials_never_change_orders` |
+| TRAP-63 | 两支段份额接近 | 整夜只查首选或随机派次 | 期望后验熵裁决，派次与待验证支段一致 | `src/meterloss/night_orders/planner.py` | `tests/test_night_orders.py::test_close_race_arbitrates_confirm_leader_vs_exclude_runner` |

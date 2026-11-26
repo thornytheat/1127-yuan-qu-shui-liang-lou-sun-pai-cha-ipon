@@ -253,6 +253,42 @@
       "after_lpm": 11.5,
       "reliable": true,
       "observed": 8890
+    },
+    {
+      "name": "中水站夜阀-A复测",
+      "sector": "中水站",
+      "interrupted": "北立",
+      "before_lpm": 19.5,
+      "after_lpm": 17.8,
+      "reliable": true,
+      "observed": 8950
+    },
+    {
+      "name": "南立管迟到夜阀-E",
+      "sector": "南立管",
+      "interrupted": "东支线",
+      "before_lpm": 11,
+      "after_lpm": 9.2,
+      "reliable": true,
+      "observed": 9055
+    },
+    {
+      "name": "窑炉间失准夜阀-E",
+      "sector": "窑炉间",
+      "interrupted": "东支线",
+      "before_lpm": 12,
+      "after_lpm": 10.4,
+      "reliable": false,
+      "observed": 8960
+    },
+    {
+      "name": "窑炉间北立补录",
+      "sector": "窑炉间",
+      "interrupted": "北立",
+      "before_lpm": 18,
+      "after_lpm": 15.5,
+      "reliable": true,
+      "observed": 8920
     }
   ]
 }
